@@ -104,32 +104,32 @@ class Parser:
 
         def __lsls(args: list, instruction_number: int = None) -> str:
             """Parse the lsls instruction. (Logical Shift Left) LSLS Rd, Rm, #<imm5> or LSLS Rdn, Rm"""
-            if '#' in args[-1]:
+            if args[-1].startswith("#"):
                 return "00000" + Parser.__get_immediate(args[-1], 5) + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
             return "0100000010" + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
 
         def __lsrs(args: list, instruction_number: int = None) -> str:
             """Parse the lsrs instruction. (Logical Shift Right) LSRS Rd, Rm, #<imm5> or LSRS Rdn, Rm"""
-            if '#' in args[-1]:
+            if args[-1].startswith("#"):
                 return "00001" + Parser.__get_immediate(args[-1], 5) + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
             return "0100000011" + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
 
         def __asrs(args: list, instruction_number: int = None) -> str:
             """Parse the asrs instruction. (Arithmetic Shift Right) ASRS Rd, Rm, #<imm5> or ASRS Rdn, Rm"""
-            if '#' in args[-1]:
+            if args[-1].startswith("#"):
                 return "00010" + Parser.__get_immediate(args[-1], 5) + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
             return "0100000100" + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
 
         def __adds(args: list, instruction_number: int = None) -> str:
             """Parse the adds instruction. (Add register or 3-bit immediate) ADDS Rd, Rn, Rm or ADDS Rd, Rn, #<imm3>"""
-            if '#' in args[-1]:
+            if args[-1].startswith("#"):
                 return "0001110" + Parser.__get_immediate(args[-1], 3) + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
 
             return "0001100" + Parser.__get_register(args[2]) + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
 
         def __subs(args: list, instruction_number: int = None) -> str:
             """Parse the subs instruction. (Subtract register or 3-bit immediate) SUBS Rd, Rn, Rm or SUBS Rd, Rn, #<imm3>"""
-            if '#' in args[-1]:
+            if args[-1].startswith("#"):
                 return "0001111" + Parser.__get_register(args[2]) + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
             else:
                 return "0001101" + Parser.__get_register(args[2]) + Parser.__get_register(args[1]) + Parser.__get_register(args[0])
@@ -192,19 +192,19 @@ class Parser:
 
         def __str(args: list, instruction_number: int = None) -> str:
             """Parse the str instruction. (Store word) STR Rt, [SP, #<imm8>]"""
-            return "10010" + Parser.__get_register(args[0]) + Parser.__get_immediate(args[-1][:-1], 8, True)  # Remove the closing bracket
+            return "10010" + Parser.__get_register(args[0]) + Parser.__get_immediate(args[-1][:-1], 8, division_by_4=True)  # Remove the closing bracket
 
         def __ldr(args: list, instruction_number: int = None) -> str:
             """Parse the ldr instruction. (Load word) LDR Rt, [SP, #<imm8>]"""
-            return "10011" + Parser.__get_register(args[0]) + Parser.__get_immediate(args[-1][:-1], 8, True)  # Remove the closing bracket
+            return "10011" + Parser.__get_register(args[0]) + Parser.__get_immediate(args[-1][:-1], 8, division_by_4=True)  # Remove the closing bracket
 
         def __add(args: list, instruction_number: int = None) -> str:
             """Parse the add instruction. (Add immediate to SP) ADD [SP,] SP, #<imm7>"""
-            return "101100000" + Parser.__get_immediate(args[-1], 7, True)
+            return "101100000" + Parser.__get_immediate(args[-1], 7, division_by_4=True)
 
         def __sub(args: list, instruction_number: int = None) -> str:
             """Parse the sub instruction. (Subtract immediate from SP) SUB [SP,] SP, #<imm7>"""
-            return "101100001" + Parser.__get_immediate(args[-1], 7, True)
+            return "101100001" + Parser.__get_immediate(args[-1], 7, division_by_4=True)
 
         def __beq(args: list, instruction_number: int = None) -> str:
             """Parse the beq instruction. (Branch if equal) BEQ <label> (with label written on 8 bits as imm8)"""
@@ -275,10 +275,10 @@ class Parser:
 
             keyword = instruction[0].lower()
 
-            if keyword[-1] == ':' or keyword[0] in ['@', '.']:
+            if keyword.endswith(':') or keyword.startswith(('@', '.')):
                 continue
 
-            fun = locals()["_Parser__" + keyword.lower()]
+            fun = locals()["_Parser__" + keyword]
             binary = fun(instruction[1:], i)
             machine_code += Parser.__convert(binary, 2,
                                              16).zfill(DEFAULT_HEXADECIMAL_SIZE) + " "
@@ -292,7 +292,7 @@ class Parser:
 
 
 def main() -> None:
-    test_folder = TESTS_PATH if TESTS_PATH.endswith('/') else TESTS_PATH + '/'
+    test_folder = TESTS_PATH if TESTS_PATH.endswith('/') else TESTS_PATH + '/'  # Ensure we have a well-formed path
     asm_files = glob(f"{test_folder}**/*.s", recursive=True)
 
     for asm_file in asm_files:
@@ -304,13 +304,14 @@ def main() -> None:
             machine_code = Parser.parse_asm_into_machine_code(asm_code)
 
         # Checking if the content of the machine code is the same as the content of the .bin file in the same directory
-        with open(asm_file.replace(".s", ".bin"), "r") as f:
+        bin_file = ''.join(asm_file.split('.')[:-1]) + ".bin"
+        with open(bin_file, "r") as f:
             expected_machine_code = ''.join(f.readlines()[1:])
             if machine_code.strip() != expected_machine_code.strip():
                 print(f"Error in: {asm_file}:")
                 print(f"1: {expected_machine_code}", end='')
                 print(f"2: {machine_code}")
-                exit()
+                exit(1)
 
             else:
                 print(f"Test passed for {asm_file}")
