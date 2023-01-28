@@ -1,0 +1,3 @@
+[submodule "proc/logisim"]
+	path = proc/logisim
+	url = https://github.com/logisim-evolution/logisim-evolution.git
