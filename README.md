@@ -2,11 +2,13 @@
 
 ## 📋 Instructions we had to follow
 
-By using [Logisim](proc/logisim/), we firstly had to make a [CPU](proc/) (a simplified one). To test it, we have [some very basic C snippets](c/) which are used to test our processor. Next, we had to make [a program](asm/) which can translate assembly language (ARMv7) into machine code.
+By using [Logisim](proc/logisim/), we firstly had to make a [CPU](proc/) (a simplified one). To test it, we have [some very basic C snippets](c/) which can be compiled by the CPU into Assembly. Next, we had to make [a program](asm/) which can translate assembly language (ARMv7) into machine code.
 
 You can learn more about Logisim, ARMv7 and the whole Cortex-M0 family of processors in the [docs](docs/) folder.
 
 ## ⚙️ Compile C to ARM Assembly
+
+To check whether our CPU works or not, we need to compile these C programs and compare each other.
 
 Install the `libc6-armel-cross`, `libc6-dev-armel-cross`, `binutils-arm-linux-gnueabi` and `libncurses5-dev` packages by using the following command:
 
