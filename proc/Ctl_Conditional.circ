@@ -241,7 +241,7 @@ end TCL_Generic;
     <a name="clabelup" val="east"/>
     <appear>
       <circ-anchor facing="east" height="6" width="6" x="247" y="57"/>
-      <circ-port height="10" pin="450,120" width="10" x="245" y="55"/>
+      <circ-port height="10" pin="490,120" width="10" x="245" y="55"/>
       <circ-port height="10" pin="690,340" width="10" x="245" y="75"/>
       <circ-port height="8" pin="210,140" width="8" x="46" y="76"/>
       <circ-port height="8" pin="210,290" width="8" x="46" y="116"/>
@@ -326,7 +326,10 @@ end TCL_Generic;
       <a name="fanout" val="4"/>
       <a name="incoming" val="16"/>
     </comp>
-    <comp lib="0" loc="(450,120)" name="Pin">
+    <comp lib="0" loc="(480,120)" name="Pull Resistor">
+      <a name="facing" val="north"/>
+    </comp>
+    <comp lib="0" loc="(490,120)" name="Pin">
       <a name="facing" val="west"/>
       <a name="label" val="Offset"/>
       <a name="output" val="true"/>
@@ -337,6 +340,10 @@ end TCL_Generic;
       <a name="label" val="Verified"/>
       <a name="output" val="true"/>
     </comp>
+    <comp lib="1" loc="(470,120)" name="Controlled Buffer">
+      <a name="control" val="left"/>
+      <a name="width" val="11"/>
+    </comp>
     <comp lib="1" loc="(650,340)" name="AND Gate">
       <a name="size" val="30"/>
     </comp>
@@ -346,7 +353,7 @@ end TCL_Generic;
     <wire from="(210,320)" to="(290,320)"/>
     <wire from="(210,350)" to="(280,350)"/>
     <wire from="(210,380)" to="(340,380)"/>
-    <wire from="(210,50)" to="(620,50)"/>
+    <wire from="(210,50)" to="(460,50)"/>
     <wire from="(270,220)" to="(270,270)"/>
     <wire from="(270,220)" to="(370,220)"/>
     <wire from="(270,270)" to="(330,270)"/>
@@ -360,6 +367,10 @@ end TCL_Generic;
     <wire from="(330,300)" to="(340,300)"/>
     <wire from="(370,120)" to="(450,120)"/>
     <wire from="(370,160)" to="(370,220)"/>
+    <wire from="(460,50)" to="(460,110)"/>
+    <wire from="(460,50)" to="(620,50)"/>
+    <wire from="(470,120)" to="(480,120)"/>
+    <wire from="(480,120)" to="(490,120)"/>
     <wire from="(560,300)" to="(590,300)"/>
     <wire from="(590,300)" to="(590,350)"/>
     <wire from="(590,350)" to="(620,350)"/>
