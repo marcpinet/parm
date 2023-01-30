@@ -9,6 +9,7 @@ from glob import glob
 
 DEFAULT_REGISTER_SIZE = 3
 DEFAULT_HEXADECIMAL_SIZE = 4
+BINARY_HEADER = "v2.0 raw"
 TESTS_PATH = "tests/"
 
 
@@ -278,8 +279,11 @@ class Parser:
             if keyword.endswith(':') or keyword.startswith(('@', '.')):
                 continue
 
-            fun = locals()["_Parser__" + keyword]
-            binary = fun(instruction[1:], i)
+            try:
+                fun = locals()["_Parser__" + keyword]
+                binary = fun(instruction[1:], i)
+            except:
+                continue  # ignoring unhandled instructions according to the project
             machine_code += Parser.__convert(binary, 2,
                                              16).zfill(DEFAULT_HEXADECIMAL_SIZE) + " "
 
@@ -295,26 +299,35 @@ def main() -> None:
     test_folder = TESTS_PATH if TESTS_PATH.endswith('/') else TESTS_PATH + '/'  # Ensure we have a well-formed path
     asm_files = glob(f"{test_folder}**/*.s", recursive=True)
 
+    answer = input("Testing or compiling? (t/c)\n")
+    test = True if answer.lower() == 't' else False
+
     for asm_file in asm_files:
-        print(f"Testing {asm_file}...")
+        if test:
+            print(f"Testing {asm_file}...")
 
         # Getting the machine code from the parser
         with open(asm_file, "r") as f:
             asm_code = f.read()
             machine_code = Parser.parse_asm_into_machine_code(asm_code)
 
-        # Checking if the content of the machine code is the same as the content of the .bin file in the same directory
         bin_file = ''.join(asm_file.split('.')[:-1]) + ".bin"
-        with open(bin_file, "r") as f:
-            expected_machine_code = ''.join(f.readlines()[1:])
-            if machine_code.strip() != expected_machine_code.strip():
-                print(f"Error in: {asm_file}:")
-                print(f"1: {expected_machine_code}", end='')
-                print(f"2: {machine_code}")
-                exit(1)
 
-            else:
-                print(f"Test passed for {asm_file}")
+        if test:
+            # Checking if the content of the machine code is the same as the content of the .bin file in the same directory
+            with open(bin_file, "r") as f:
+                expected_machine_code = ''.join(f.readlines()[1:])
+                if machine_code.strip() != expected_machine_code.strip():
+                    print(f"Error in: {asm_file}:")
+                    print(f"1: {expected_machine_code}", end='')
+                    print(f"2: {machine_code}")
+                    exit(1)
+                else:
+                    print(f"Test passed for {asm_file}")
+        else:
+            # Writing to .bin file
+            with open(bin_file, "w") as f:
+                f.write(BINARY_HEADER + '\n' + machine_code.strip())
 
 
 # -------------------- MAIN CALL --------------------
