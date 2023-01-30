@@ -2,18 +2,18 @@
 
 ## 📋 Instructions we had to follow
 
-By using [Logisim](proc/logisim/), we firstly had to make a [CPU](proc/) (a simplified one). To test it, we have [some very basic C snippets](c/) which can be compiled by the CPU into Assembly. Next, we had to make [a program](asm/) which can translate assembly language (ARMv7) into machine code.
+By using [Logisim](proc/logisim/), we firstly had to make a [CPU](proc/) (a simplified one) which can run binary files (machine code). You can find how to convert Clang files into Assembly files in the next section. Next, we had to make [a program](asm/) which can translate assembly language (ARMv7) into machine code.
 
 You can learn more about Logisim, ARMv7 and the whole Cortex-M0 family of processors in the [docs](docs/) folder.
 
-## ⚙️ Compile C to ARM Assembly
+## ⚙️ Compile C to ARM Assembly using the CPU
 
 To check whether our CPU works or not, we need to compile these C programs and compare each other.
 
 Install the `libc6-armel-cross`, `libc6-dev-armel-cross`, `binutils-arm-linux-gnueabi` and `libncurses5-dev` packages by using the following command:
 
 ```bash
-sudo apt-get install libc6-armel-cross libc6-dev-armel-cross binutils-arm-linux-gnueabi libncurses5-dev
+sudo apt-get install clang libc6-armel-cross libc6-dev-armel-cross binutils-arm-linux-gnueabi libncurses5-dev
 ```
 
 Then, install `gcc` and `g++` to support ARM:
@@ -25,8 +25,11 @@ sudo apt-get install gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 Finally, you can compile like this:
 
 ```bash
-arm-linux-gnueabi-gcc hello.c -S -mtune=cortex-m0 -march=armv7-m -mthumb -fomit-frame-pointer -o hello.s
+clang -S -target arm-none-eabi -mcpu=cortex-m0 -O0 -mthumb -nostdlib -I./include main.c
 ```
+
+Please, note that the `./include` folder (which contains the headers) should be in the same directory of the `main.c`.
+You can see some examples in the [c](c/) folder.
 
 ## 📽️ Presentation
 
